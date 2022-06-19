@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator BMI</title>
+</head>
+<style>
+  .column {
+    float: left;
+    width: 33.33%;
+    background-color: salmon;
+    min-height: 200px;
+    padding: 10px;
+    border: 1px solid black;
+    box-sizing: border-box;
+  }
+
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;    
+  }
+</style>
+
+<body>
+    <h1 class="title" style="text-align: center;font-size: 45px;">Kalkulator BMI</h1>
+    <div class="row"> 
+
+     <div class="column" style="background-color: rgb(245, 174, 166);">
+        Waga[kg]
+        <input type="number" class="waga" max="200" min="40" required/><br>
+        Wzrost[cm]
+        <input type="number" class="wzrost" max="240" min="120" required/><br>
+        <button class="przycisk">Oblicz</button>
+     </div>
+   
+     <div class="column" style="background-color: rgb(247, 193, 147);">
+        <div id="porownanie" style="text-align: center;"></div>
+        <p style="text-align: center;">Twój wynik: <br>
+        <span id ="wynik" style="font-size: 15px; font-weight: bold;"></span>
+        </p> 
+     </div>
+
+     <div class="column" style="background-color: rgb(140, 216, 173);">
+        <p style="text-align: center;">Historia wyników: </p>
+        <div id="history">
+        
+        </div>
+        <span id="srednia"></span>
+     </div>
+     </div>
+
+    <script>
+
+        const przycisk = document.querySelector(".przycisk");
+        const historia = [];
+        function kliknij() {
+            const polePierwsze = document.querySelector(".waga");
+            const wartoscWPierwszymPolu = parseFloat(polePierwsze.value);
+            
+            if (!sprawdzWage(wartoscWPierwszymPolu)) {
+              return;
+            }
+            const poleDrugie = document.querySelector (".wzrost");
+            const wartoscWDrugimPolu = parseFloat(poleDrugie.value)/100;
+            if (!sprawdzWzrost(wartoscWDrugimPolu)) {
+              return;
+            }
+
+            const BMI = wartoscWPierwszymPolu / (wartoscWDrugimPolu * wartoscWDrugimPolu);
+            if (historia.length > 0) {
+              const porownanie = document.querySelector("#porownanie");
+              const ostatniPomiar = historia[historia.length - 1];
+              if (ostatniPomiar.bmi < BMI) {
+                porownanie.innerHTML = "Twoje BMI wzrosło"
+              } else if (ostatniPomiar.bmi > BMI) {
+                porownanie.innerHTML = "Twoje BMI spadło"
+              } else {
+                porownanie.innerHTML = ""
+              }
+            }
+            const pomiar = document.querySelector("#wynik");
+            const pomiarHistoria = {
+              waga: wartoscWPierwszymPolu,
+              wzrost: wartoscWDrugimPolu,
+              bmi: BMI,
+              data: new Date()
+            };
+            historia.push(pomiarHistoria);
+            const pomiarDiv = document.createElement("div");
+            pomiarDiv.innerHTML = "Pomiar # " + historia.length + ": " + pomiarHistoria.data;
+
+            pomiarDiv.style.cssText = "margin: 10px; padding: 10px; cursor: pointer; border: 1px solid black;";
+            pomiarDiv.addEventListener("click", function() {
+              porownanie.innerHTML = "";
+              pomiar.innerHTML = "waga = " + wartoscWPierwszymPolu + "kg wzrost = " + wartoscWDrugimPolu + "m " +
+               "BMI = " + BMI.toFixed(2);
+            });
+
+            const WynikHistorii = document.querySelector("#history");
+            WynikHistorii.appendChild(pomiarDiv);
+
+            let sredniaBMI = 0;
+            const sredniaSpan = document.querySelector("#srednia");
+            for (let i = 0; i < historia.length; i++) {
+              sredniaBMI = sredniaBMI + historia[i].bmi;
+            }
+            sredniaSpan.innerHTML = "Średnia BMI: " + (sredniaBMI / historia.length).toFixed(2);
+
+            pomiar.innerHTML = "waga = " + wartoscWPierwszymPolu + "kg wzrost = " + wartoscWDrugimPolu + "m " +
+               "BMI = " + BMI.toFixed(2);
+            console.log(historia);
+            polePierwsze.value = "";
+            poleDrugie.value = "";
+           };
+
+        function sprawdzWage(waga) {
+          if (waga < 40 || waga > 200) {
+            alert("Podana waga jest nieprawidłowa (40kg - 200kg)"); 
+            return false
+          }
+          return true;
+        };
+        function sprawdzWzrost(wzrost) {
+          if (wzrost < 1.20 || wzrost > 2.40) {
+            alert("Podany wzrost jest nieprawidłowy (120cm - 240cm)");
+            return false
+          }
+          return true;
+        };
+
+
+
+        przycisk.addEventListener("click", kliknij);
+       
+        
+         
+       
+        
+    </script>
+</body>
+</html>
